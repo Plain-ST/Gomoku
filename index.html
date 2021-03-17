@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>五目並べ</title>
+        <style>
+            #field td {
+            border: 1px solid black;
+            width: 60px;
+            height: 60px;
+            background-color: orange;
+            text-align: center;
+            vertical-align: middle;
+            table-layout: fixed;
+            padding: 1px 1px 1px 1px;
+            font-size: 35px;
+            }
+        </style>
+    </head>
+    <body>
+        <p id="view_turn" align="center"></p>
+        <table id="field" align="center"></table>
+
+
+        <script type="text/javascript">
+        //ターン変数の設定
+        let tern = 0  //黒=1,白=-1
+        //盤面の配列を定義
+        let board_array = new Array(10)
+        for (let x = 0;x < board_array.length;x++){
+            board_array[x] = new Array(10)
+        }
+        //HTMLのテーブルを取得
+        let board = document.getElementById('field')
+        //
+        board_new()
+        board_init()
+        for(let x = 0;x < 10;x++){
+            for(let y = 0;y < 10;y++){
+                let select_cell = board.rows[x].cells[y];
+                select_cell.onclick = function(){
+                    if(win_check()){
+                            win_alert()
+                            board_init()
+                    }else if(board_array[this.parentNode.rowIndex][this.cellIndex] == 0){
+                        board_array[this.parentNode.rowIndex][this.cellIndex] = turn
+                        board_set()
+                        change_turn()                            
+                    }
+                    
+                }
+            }
+        }
+
+        //盤の作成
+        function board_new(){
+            for (let x = 0; x < 10; x++) {
+                let tr = document.createElement("tr")
+                board.appendChild(tr)
+                for (let y = 0; y < 10; y++) {
+                    let td = document.createElement("td")
+                    tr.appendChild(td)
+                }
+            }
+        }
+        //盤の初期化
+        function board_init(){
+            for(let x = 0;x < 10;x++){
+                for(let y = 0;y < 10;y++){
+                    board_array[x][y] = 0
+                }
+            }
+            board_set()
+            turn = -1
+            change_turn()
+        }
+        //盤の反映
+        function board_set(){
+            let symbol = ""
+            for (let x = 0; x < 10; x++) {
+                for (let y = 0; y < 10; y++) {
+                switch(board_array[x][y] ) {
+                    case 0:
+                        symbol = ""
+                        break;
+                    case -1:
+                        symbol = "×"
+                        break;
+                    case 1:
+                        symbol = "●"
+                        break;
+                }
+                board.rows[x].cells[y].innerText = symbol;
+                }
+            }
+        }
+        //ターンの変更
+        function change_turn(){
+            let turn_msg = document.getElementById('view_turn')
+            turn = turn*-1
+
+            switch(turn){
+                case -1:
+                    turn_msg.textContent = "×のターンです";
+                    break;
+                case 1:
+                    turn_msg.textContent = "●のターンです";
+                    break;
+            }
+        }
+        //勝敗条件の設定
+        function win_check(){
+            //縦
+            for(let x = 0;x < 6;x++){
+                for(let y = 0;y < 10;y++){
+                    if(
+                        board_array[x][y] != 0&&
+                        board_array[x][y] == board_array[x+1][y]&&
+                        board_array[x][y] == board_array[x+2][y]&&
+                        board_array[x][y] == board_array[x+3][y]&&
+                        board_array[x][y] == board_array[x+4][y]
+                    ){
+                        return true;
+                    }
+                }
+            }
+            //横
+            for(let x = 0;x <10;x++){
+                for(let y = 0;y < 7;y++){
+                    if(
+                        board_array[x][y] != 0&&
+                        board_array[x][y] == board_array[x][y+1]&&
+                        board_array[x][y] == board_array[x][y+2]&&
+                        board_array[x][y] == board_array[x][y+3]&&
+                        board_array[x][y] == board_array[x][y+4]
+                    ){
+                        return true;
+                    }
+                }
+            }
+            //斜め(\)
+            for(let x = 0;x < 6;x++){
+                for(let y = 0;y < 6;y++){
+                    if(
+                        board_array[x][y] != 0&&
+                        board_array[x][y] == board_array[x+1][y+1]&&
+                        board_array[x][y] == board_array[x+2][y+2]&&
+                        board_array[x][y] == board_array[x+3][y+3]&&
+                        board_array[x][y] == board_array[x+4][y+4]
+                    ){
+                        return true;
+                    }
+                }
+            }
+            //斜め(/)
+            for(let x = 4;x < 10;x++){
+                for(let y = 0;y < 6;y++){
+                    if(
+                        board_array[x][y] != 0&&
+                        board_array[x][y] == board_array[x-1][y+1]&&
+                        board_array[x][y] == board_array[x-2][y+2]&&
+                        board_array[x][y] == board_array[x-3][y+3]&&
+                        board_array[x][y] == board_array[x-4][y+4]
+                    ){
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        //
+        function win_alert(){
+            symbol = ""
+            switch(turn){
+                case -1:
+                    symbol = "●"
+                    break;
+                case 1:
+                    symbol = "×"
+                    break;
+            }
+            window.alert(symbol+"の勝ちです")
+        }
+        </script>
+    </body>
+</html>
